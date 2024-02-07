@@ -9,10 +9,12 @@ class Converter:
         self.temp_frame.grid()
 
         self.temp_heading = Label(self.temp_frame, 
-                                 text="Temperature Convertor",
-                                 font=("Arial", "bold", "16")
-                                 )
-                                 
+                                  text="Temperature Convertor",
+                                  font=("Arial", 16, "bold")
+                                  )
+
+
+
         self.temp_heading.grid(row=0)
 
         instructions = "Please enter a temperature below and"\
@@ -20,7 +22,7 @@ class Converter:
                         "it from centigrade to Fahrenheit."
         self.temp_instructions = Label(self.temp_frame,
                                        text=instructions,
-                                       warp=250,width=40,
+                                       wrap=250,width=40,
                                        justify="left")
         self.temp_instructions.grid(row=1)
 

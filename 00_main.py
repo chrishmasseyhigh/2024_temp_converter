@@ -1,5 +1,7 @@
+
 from tkinter import *
 
+from all_functions2 import num_check_v2
 
 class Converter:
     def __init__(self):
@@ -76,6 +78,9 @@ class Converter:
                                         font=button_font,width=12,
                                         state=DISABLED)
         self.to_history_export_button.grid(row=1, column=1,padx=5,pady=5)
+
+def to_celsius(self):
+        self num_check_v2(-459)
 #main routine
 if __name__ == "__main__":
     root = Tk()

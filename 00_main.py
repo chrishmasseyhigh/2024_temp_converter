@@ -80,7 +80,13 @@ class Converter:
         self.to_history_export_button.grid(row=1, column=1,padx=5,pady=5)
 
 def to_celsius(self):
-        self num_check_v2(-459)
+    temperature = self.temp_entry.get()
+    if num_check_v2(temperature, -459):
+        # Proceed with conversion logic
+        pass
+    else:
+        self.temp_error.config(text="Temperature must be >= -459")
+
 #main routine
 if __name__ == "__main__":
     root = Tk()

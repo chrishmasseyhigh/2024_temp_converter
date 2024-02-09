@@ -1,20 +1,14 @@
-# Checks that input is float or int that is more than 0 (custom error message)           
-def num_check_v2(low_val):
+def num_check_v2(input_value, low_val):
+    error = f"Please enter a number higher than {low_val}."
 
-    error ="please enter a number higher than {}.".format(low_val)
-    # Loops unit right input is entered
-    valid= False
-    while not valid:
-        
-        # Gets input
+    while True:
         try:
-            response = float(input("Chose a number: "))
-            
+            response = float(input_value)
             if response <= low_val:
                 print(error)
+                return False
             else:
-                return response
-
-        # tells user if they have entered the wrong thing    
+                return True
         except ValueError:
             print(error)
+            return False

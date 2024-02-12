@@ -2,8 +2,15 @@ from tkinter import *
 
 
 class Converter:
+    
     def __init__(self):
+        
+        # Initialise variables (such as the feedback variable)
+        self.var_feedback = StringVar()
+        self.var_feedback.set("")
 
+        self.var_has_error = StringVar()
+        self.var_has_error.set("no")
         # common format for all buttons
         # Arial size 14 bold with white text
         button_font = ("Arial", "12", "bold")
@@ -83,6 +90,7 @@ class Converter:
             response = float(self.temp_entry.get())
             if response <= low_val - 0.000001:
                 has_error = True
+        
         except ValueError:
             has_error = True
 

@@ -5,29 +5,31 @@ class Converter:
     
     def __init__(self):
         
-        # Initialise variables (such as the feedback variable)
-        self.var_feedback = StringVar()
-        self.var_feedback.set("")
+        # Initialize variables
+        self.var_feedback = StringVar()  
+        self.var_feedback.set("")        
 
-        self.var_has_error = StringVar()
-        self.var_has_error.set("no")
-        # common format for all buttons
-        # Arial size 14 bold with white text
+        self.var_has_error = StringVar()  
+        self.var_has_error.set("no")     
+        
+        # Common format for all buttons
         button_font = ("Arial", "12", "bold")
         button_fg = "#FFFFFF"
         
-        # Set up GUI Frame()
+        # Set up GUI Frame
         self.temp_frame = Frame()
         self.temp_frame.grid()
 
+        # Header label
         self.temp_heading = Label(self.temp_frame, 
-                                  text="Temperature Convertor",
+                                  text="Temperature Converter",
                                   font=("Arial", 16, "bold")
                                   )
         self.temp_heading.grid(row=0)
 
+        # Instructions label
         instructions = "Please enter a temperature below and"\
-                        "then press one of the buttons to convert " \
+                        " then press one of the buttons to convert " \
                         "it from centigrade to Fahrenheit."
         self.temp_instructions = Label(self.temp_frame,
                                        text=instructions,
@@ -35,22 +37,24 @@ class Converter:
                                        justify="left")
         self.temp_instructions.grid(row=1)
         
+        # Entry widget for user input
         self.temp_entry = Entry(self.temp_frame,
                                 font=("Arial", "14")
                                 )
         self.temp_entry.grid(row=2, padx=10, pady=10)
 
-        error = "Please enter a number"
+        # Error message label
         self.temp_error = Label(self.temp_frame, 
                                 text="",
                                 fg="#9C0000"
                                 )
         self.temp_error.grid(row=3)
 
-        # Conversion, help and history / export buttons self.button_frame = Frame(self.temp_frame)
+        # Button frame for conversion and other actions
         self.button_frame = Frame(self.temp_frame)
         self.button_frame.grid(row=4)
 
+        # Conversion buttons
         self.to_celsius_button = Button(self.button_frame,
                                         text="To Celsius",
                                         bg="#990099",
@@ -66,6 +70,7 @@ class Converter:
                                             font=button_font, width=12)
         self.to_fahrenheit_button.grid(row=0, column=1, padx=5, pady=5)
 
+        # Other action buttons
         self.to_help_info_button = Button(self.button_frame,
                                           text="Help/Info",
                                           bg="#CC6600",
@@ -81,30 +86,59 @@ class Converter:
                                                 state=DISABLED)
         self.to_history_export_button.grid(row=1, column=1, padx=5, pady=5)
 
-    def num_check_v2(self, low_val):
-        has_error = False
+    # Function to check the validity of the entered temperature
+    def check_temp(self, low_val):
+        has_error = False  # Initialize error indicator to False
         error = f"Please enter a number higher than or equal to {low_val}."
 
-        # Check if the number is valid
+        # Get the user input
+        response = self.temp_entry.get()
+        
         try:
-            response = float(self.temp_entry.get())
-            if response <= low_val - 0.000001:
-                has_error = True
+            # Try converting the input to float
+            temp = float(response)
+            # Checks if the temperature is within the valid range
+            if temp <= low_val - 0.000001:
+                has_error = True 
         
         except ValueError:
-            has_error = True
+            has_error = True  
 
-        # If there is an error, display the error message
+        # If there's an error, update feedback message and return False
         if has_error:
-            self.temp_error.config(text=error, fg="#9C0000")
+            self.var_has_error.set("yes") 
+            self.var_feedback.set(error)  
+            return False
         else:
-            # If there is no error, indicate valid input and enable the history button
-            self.temp_error.config(text="Valid input", fg="green")
-            self.to_history_export_button.config(state=NORMAL)
-
-    # Check if the temperature is more than -459 and convert it
+            self.var_has_error.set("no")  
+            self.to_history_export_button.config(state=NORMAL)  
+            return temp  
+    
+    # Function to convert the temperature to Celsius
     def to_celsius(self):
-        self.num_check_v2(-459)
+        # Check the validity of the temperature input
+        to_convert = self.check_temp(-459)
+        if to_convert:
+            # If input is valid, update feedback message with conversion information
+            self.var_feedback.set("Converting {} to C".format(to_convert))
+        
+        self.output_answer()
+    
+    # Function to display the output and handle formatting
+    def output_answer(self):
+        output = self.var_feedback.get() 
+        has_errors = self.var_has_error.get()  
+
+        # Format the error message label and entry widget background based on error indicator
+        if has_errors == "yes":
+            self.temp_error.config(fg="#9C0000") 
+            self.temp_entry.config(bg="#F8CECC")  
+        else:
+            self.temp_error.config(fg="#004C00")  
+            self.temp_entry.config(bg="#FFFFFF")  
+        
+        # Update the error message label with the feedback message
+        self.temp_error.config(text=output)
 
 # Main routine
 if __name__ == "__main__":

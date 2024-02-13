@@ -44,11 +44,11 @@ class Converter:
         self.temp_entry.grid(row=2, padx=10, pady=10)
 
         # Error message label
-        self.temp_error = Label(self.temp_frame, 
-                                text="",
-                                fg="#9C0000"
-                                )
-        self.temp_error.grid(row=3)
+        self.output_label = Label(self.temp_frame, 
+                                  text="",
+                                  fg="#9C0000"
+                                  )
+        self.output_label.grid(row=3)
 
         # Button frame for conversion and other actions
         self.button_frame = Frame(self.temp_frame)
@@ -67,7 +67,8 @@ class Converter:
                                             text="To Fahrenheit",
                                             bg="#009900",
                                             fg=button_fg,
-                                            font=button_font, width=12)
+                                            font=button_font, width=12,
+                                            command=self.to_fahrenheit)
         self.to_fahrenheit_button.grid(row=0, column=1, padx=5, pady=5)
 
         # Other action buttons
@@ -124,6 +125,17 @@ class Converter:
         
         self.output_answer()
     
+    # Function to convert the temperature to Fahrenheit
+    def to_fahrenheit(self):
+        # Check the validity of the temperature input
+        to_convert = self.check_temp(-273)
+        if to_convert:
+            # If input is valid, update feedback message with conversion information
+            self.var_feedback.set("Converting {} to F"
+                                .format(to_convert))
+        
+        self.output_answer()
+
     # Function to display the output and handle formatting
     def output_answer(self):
         output = self.var_feedback.get() 
@@ -131,14 +143,14 @@ class Converter:
 
         # Format the error message label and entry widget background based on error indicator
         if has_errors == "yes":
-            self.temp_error.config(fg="#9C0000") 
+            self.output_label.config(fg="#9C0000") 
             self.temp_entry.config(bg="#F8CECC")  
         else:
-            self.temp_error.config(fg="#004C00")  
+            self.output_label.config(fg="#004C00")  
             self.temp_entry.config(bg="#FFFFFF")  
         
         # Update the error message label with the feedback message
-        self.temp_error.config(text=output)
+        self.output_label.config(text=output)
 
 # Main routine
 if __name__ == "__main__":

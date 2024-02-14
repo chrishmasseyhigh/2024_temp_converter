@@ -1,16 +1,17 @@
 from tkinter import *
 
-
 class Converter:
     
     def __init__(self):
         
         # Initialize variables
-        self.var_feedback = StringVar()  
+        self.var_feedback = StringVar() 
         self.var_feedback.set("")        
 
-        self.var_has_error = StringVar()  
-        self.var_has_error.set("no")     
+        self.var_has_error = StringVar() 
+        self.var_has_error.set("no")      
+        
+        self.all_calculations = []
         
         # Common format for all buttons
         button_font = ("Arial", "12", "bold")
@@ -60,7 +61,7 @@ class Converter:
                                         bg="#990099",
                                         fg=button_fg,
                                         font=button_font, width=12,
-                                        command=self.to_celsius)
+                                        command=lambda: self.temp_convert(-459))
         self.to_celsius_button.grid(row=0, column=0, padx=5, pady=5)
         
         self.to_fahrenheit_button = Button(self.button_frame,
@@ -68,7 +69,7 @@ class Converter:
                                             bg="#009900",
                                             fg=button_fg,
                                             font=button_font, width=12,
-                                            command=self.to_fahrenheit)
+                                            command=lambda: self.temp_convert(-273))
         self.to_fahrenheit_button.grid(row=0, column=1, padx=5, pady=5)
 
         # Other action buttons
@@ -89,60 +90,72 @@ class Converter:
 
     # Function to check the validity of the entered temperature
     def check_temp(self, low_val):
-        has_error = False  # Initialize error indicator to False
+        has_error = False
         error = f"Please enter a number higher than or equal to {low_val}."
 
-        # Get the user input
         response = self.temp_entry.get()
         
         try:
-            # Try converting the input to float
             temp = float(response)
-            # Checks if the temperature is within the valid range
             if temp <= low_val - 0.000001:
                 has_error = True 
         
         except ValueError:
             has_error = True  
 
-        # If there's an error, update feedback message and return False
         if has_error:
             self.var_has_error.set("yes") 
             self.var_feedback.set(error)  
-            return False
+            return "invalid"
         else:
             self.var_has_error.set("no")  
             self.to_history_export_button.config(state=NORMAL)  
             return temp  
     
-    # Function to convert the temperature to Celsius
-    def to_celsius(self):
-        # Check the validity of the temperature input
-        to_convert = self.check_temp(-459)
-        if to_convert:
-            # If input is valid, update feedback message with conversion information
-            self.var_feedback.set("Converting {} to C".format(to_convert))
+    # Function to round the result to the nearest whole number
+    @staticmethod
+    def round_ans(val):
+        var_rounded = (val * 2 + 1) // 2 
+        return "{:.0f}".format(var_rounded)
+    
+    # Function to convert temperature and display the result
+    def temp_convert(self, low_val):
+        to_convert = self.check_temp(low_val)
+        deg_sign = u'\N{DEGREE SIGN}'
+        set_feedback = "yes"
+        answer =""
+        from_to=""
+                    
+        if to_convert == "invalid":
+            set_feedback = "no"
+        
+        elif low_val == -459:
+            answer = (to_convert - 32) * 5 / 9
+            from_to = "{} F{} is {} C{}" 
+        
+        else:
+            answer = to_convert * 1.8 + 32  
+            from_to = "{} C{} is {} F{}"
+        
+        if set_feedback == "yes":
+            to_convert = self.round_ans(to_convert)
+            answer = self.round_ans(answer)
+            
+            feedback = from_to.format(to_convert, deg_sign, answer, deg_sign)
+            self.var_feedback.set(feedback)
+            
+            self.all_calculations.append(feedback)
+I
+            # Delete code below when history component is working!
+            print(self.all_calculations)
         
         self.output_answer()
     
-    # Function to convert the temperature to Fahrenheit
-    def to_fahrenheit(self):
-        # Check the validity of the temperature input
-        to_convert = self.check_temp(-273)
-        if to_convert:
-            # If input is valid, update feedback message with conversion information
-            self.var_feedback.set("Converting {} to F"
-                                .format(to_convert))
-            
-        
-        self.output_answer()
-
     # Function to display the output and handle formatting
     def output_answer(self):
         output = self.var_feedback.get() 
         has_errors = self.var_has_error.get()  
 
-        # Format the error message label and entry widget background based on error indicator
         if has_errors == "yes":
             self.output_label.config(fg="#9C0000") 
             self.temp_entry.config(bg="#F8CECC")  
@@ -150,10 +163,9 @@ class Converter:
             self.output_label.config(fg="#004C00")  
             self.temp_entry.config(bg="#FFFFFF")  
         
-        # Update the error message label with the feedback message
         self.output_label.config(text=output)
 
-# Main routine
+
 if __name__ == "__main__":
     root = Tk()
     root.title("Temperature Converter")

@@ -88,6 +88,14 @@ class Converter:
                                                 state=DISABLED)
         self.to_history_export_button.grid(row=1, column=1, padx=5, pady=5)
 
+    @staticmethod
+    def to_help():
+        DisplayHelp()
+
+class DisplayHelp:
+    def __init__(self):
+        print("you pressed help")
+        
     # Function to check the validity of the entered temperature
     def check_temp(self, low_val):
         has_error = False
@@ -145,7 +153,7 @@ class Converter:
             self.var_feedback.set(feedback)
             
             self.all_calculations.append(feedback)
-I
+
             # Delete code below when history component is working!
             print(self.all_calculations)
         

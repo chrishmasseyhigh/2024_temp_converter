@@ -1,5 +1,5 @@
 from tkinter import *
-from functools import partial # To prevent unwanted windows
+from functools import partial
 
 class Converter:
     
@@ -78,7 +78,8 @@ class Converter:
                                           text="Help/Info",
                                           bg="#CC6600",
                                           fg=button_fg,
-                                          font=button_font, width=12)
+                                          font=button_font, width=12,
+                                          command=self.to_help)
         self.to_help_info_button.grid(row=1, column=0, padx=5, pady=5)
         
         self.to_history_export_button = Button(self.button_frame,
@@ -89,14 +90,12 @@ class Converter:
                                                 state=DISABLED)
         self.to_history_export_button.grid(row=1, column=1, padx=5, pady=5)
 
-    @staticmethod
-    def to_help():
-        DisplayHelp()
+    def to_help(self):
+        # Disable the help button when the help dialog is opened
+        self.to_help_info_button.config(state=DISABLED)
+        # Open the help dialog
+        DisplayHelp(self)
 
-class DisplayHelp:
-    def __init__(self):
-        print("you pressed help")
-        
     # Function to check the validity of the entered temperature
     def check_temp(self, low_val):
         has_error = False
@@ -173,6 +172,61 @@ class DisplayHelp:
             self.temp_entry.config(bg="#FFFFFF")  
         
         self.output_label.config(text=output)
+
+
+class DisplayHelp:
+    
+    def __init__(self, partner):
+        background = "#ffe6cc"
+        self.partner = partner
+        self.help_box = Toplevel()
+
+        # If users press cross at top, closes help and
+        # 'releases' help button
+        self.help_box.protocol('WM_DELETE_WINDOW',
+                               partial(self.close_help, partner))
+        self.help_frame = Frame(self.help_box, width=300, height=200,
+                                bg=background)
+        self.help_frame.grid()
+
+        
+        self.help_heading_label = Label(self.help_frame, bg=background,
+                                        text="Help / Info",
+                                        font=("Arial", "14", "bold"))
+        self.help_heading_label.grid(row=0)
+        help_text = """To use the program, simply enter the temperature
+you wish to convert and then choose to convert 
+to either degrees Celsius (centigrade) or 
+Fahrenheit.. \n\n
+
+Note that -273 degrees C 
+(-459 F) is absolute zero (the coldest possible 
+temperature). If you try to convert a 
+temperature that is less than -273 degrees C, 
+you will get an error message. \n\n
+
+To see your 
+calculation history and export it to a text 
+file, please click the 'History / Export' button.""" 
+        self.help_text_label = Label(self.help_frame, bg=background, 
+                                    text=help_text, wrap=350,
+                                    justify="left")
+        self.help_text_label.grid(row=1, padx=10)
+
+        
+        self.dismiss_button = Button(self.help_frame,
+                                    font=("Arial", "12", "bold"),
+                                    text="Dismiss", bg="#CC6600",
+                                    fg="#FFFFFF",
+                                    command=partial(self.close_help,
+                                                    partner))
+        self.dismiss_button.grid(row=2, padx=18, pady=18)
+        
+    # closes help dialog ( used by button and x at top of dialog)
+    def close_help(self, partner):
+        # Enable the help button when the help dialog is closed
+        self.partner.to_help_info_button.config(state=NORMAL)
+        self.help_box.destroy()
 
 
 if __name__ == "__main__":

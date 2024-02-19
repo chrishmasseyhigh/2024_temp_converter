@@ -1,5 +1,6 @@
 from tkinter import *
 from functools import partial # To prevent unwanted windows
+
 class Converter:
     
     def __init__(self):
@@ -56,77 +57,64 @@ class Converter:
         self.button_frame.grid(row=4)
 
         # Other action buttons
-        self.to_help_info_button = Button(self.button_frame,
-                                          text="Help/Info",
-                                          bg="#CC6600",
-                                          fg=button_fg,
-                                          font=button_font, width=12,
-                                          command=self.to_help)
-        self.to_help_info_button.grid(row=1, column=0, padx=5, pady=5)
+        self.to_history_export_button = Button(self.button_frame,
+                                                text="History/Export",
+                                                bg="#004C99",
+                                                fg=button_fg,
+                                                font=button_font, width=12,
+                                                state=DISABLED,
+                                                command=self.to_history)
+        self.to_history_export_button.grid(row=1, column=1, padx=5, pady=5)
         
 
+    def to_history(self):
+        DisplayHistory(self)
 
-
-    def to_help(self):
-        DisplayHelp(self)
-
-class DisplayHelp:
+class DisplayHistory:
     
     def __init__(self, partner):
         background = "#ffe6cc"
-        self.help_box = Toplevel()
+        self.history_box = Toplevel()
 
-        # Disable the help button in the partner Converter instance
-        partner.to_help_info_button.config(state=DISABLED)
+        # Disable the history button in the partner Converter instance
+        partner.to_history_export_button.config(state=DISABLED)
 
-
-        # If users press cross at top, closes help and
-        # 'releases' help button
-        self.help_box.protocol('WH_DELETE_WINDOW',
-                                    partial(self.close_help,partner))
-        self.help_frame = Frame(self.help_box, width=300, height=200,
+        # If users press cross at top, closes history and
+        # 'releases' history button
+        self.history_box.protocol('WM_DELETE_WINDOW',
+                                    partial(self.close_history,partner))
+        self.history_frame = Frame(self.history_box, width=300, height=200,
                                 bg=background)
-        self.help_frame.grid()
+        self.history_frame.grid()
 
         
-        self.help_heading_label = Label(self.help_frame, bg=background,
-                                        text="Help / Info",
+        self.history_heading_label = Label(self.history_frame, bg=background,
+                                        text="History / Export",
                                         font=("Arial", "14", "bold"))
-        self.help_heading_label.grid(row=0)
-        help_text = """To use the program, simply enter the temperature
-you wish to convert and then choose to convert 
-to either degrees Celsius (centigrade) or 
-Fahrenheit.. \n\n
-
-Note that -273 degrees C 
-(-459 F) is absolute zero (the coldest possible 
-temperature). If you try to convert a 
-temperature that is less than -273 degrees C, 
-you will get an error message. \n\n
-
-To see your 
-calculation history and export it to a text 
-file, please click the 'History / Export' button.""" 
-        self.help_text_label = Label(self.help_frame, bg=background, 
-                                    text=help_text, wrap=350,
+        self.history_heading_label.grid(row=0)
+        history_text = """This section will display the calculation history
+and provide options for exporting it to a text file."""
+        self.history_text_label = Label(self.history_frame, bg=background, 
+                                    text=history_text, wrap=350,
                                     justify="left")
-        self.help_text_label.grid(row=1, padx=10)
+        self.history_text_label.grid(row=1, padx=10)
 
         
-        self.dismiss_button = Button(self.help_frame,
+        self.dismiss_button = Button(self.history_frame,
                                     font=("Arial", "12", "bold"),
-                                    text="Dismiss", bg="#CC6600",
+                                    text="Dismiss", bg="#004C99",
                                     fg="#FFFFFF",
-                                    command=partial(self.close_help,
+                                    command=partial(self.close_history,
                                                     partner))
         self.dismiss_button.grid(row=2, padx=18, pady=18)
         
-    # closes help dialouge ( used by button and x at top of dialouge)
-    def close_help(self,partner):
-        # Enable the help button in the partner Converter instance
-        partner.to_help_info_button.config(state=NORMAL)
+    # closes history dialog (used by button and x at top of dialog)
+    def close_history(self, partner):
+        # Enable the history button when the history dialog is closed
+        partner.to_history_export_button.config(state=NORMAL)
+        self.history_box.destroy()
 
-        self.help_box.destroy()
+
 if __name__ == "__main__":
     root = Tk()
     root.title("Temperature Converter")

@@ -69,20 +69,32 @@ class Converter:
             font=button_font,
             width=12,
             state=NORMAL,
-            command=self.to_history,
+            command=lambda: self.to_history(self.all_calculations),
         )
         self.to_history_export_button.grid(row=1, column=1, padx=5, pady=5)
 
         # *** !! remove when integrating !! ***
         self.to_history_export_button.config(state=NORMAL)
         
-    def to_history(self):
+    def to_history(self,all_calculations):
+        HistoryExport(self, all_calculations)
         self.to_history_export_button.config(state=DISABLED)
-        DisplayHistory(self)
+
 
 
 class DisplayHistory:
-    def __init__(self, partner):
+    def __init__(self, partner, calc_list):
+        
+        # sets max calcs
+        max_calcs =5
+        self.var_max_calcs = IntVar()
+        self.var_max_calcs.set(max_calcs)
+        
+        # fuctions converts conents of calcuaton list into a string
+        calc_string_text = self.get_calc_string(calc_list)
+        
+        self.to_history_export_button.config(state=DISABLED)
+
         self.partner = partner
         self.history_box = Toplevel()
         
@@ -102,6 +114,17 @@ class DisplayHistory:
             font=("Arial", "16", "bold"),
         )
         self.history_heading_label.grid(row=0)
+        
+        # customise text and background colour for calc
+        #are dependung on wether all or only some 
+        # are shown
+        num_calcs = len(calc_list)
+        
+        if num_calcs > max_calcs:
+            calc_baclground = "#FFE6CC" # peach
+            showing_all = "Here are your recent calculations" \
+                          "({}/{} calculations shown). please export your"\
+                          " calculations"
         
         # History text and label
         history_text = "Below are your recent calculations- " \
@@ -169,6 +192,34 @@ class DisplayHistory:
                                     command=partial(self.close_history, partner)
                                     )
         self.dismiss_button.grid(row=0, column=1, padx=10, pady=10)
+
+    def get_calc_string(self,var_calculations):
+        # get maximum calculations to display 
+        # (was set in __init__ function) 
+        max_calcs = self.var_max_calcs.get() 
+        calc_string=""
+        
+        # work out how many times we need to loop
+        # to output either the last five calculations 
+        # or all the calculations
+        if len(var_calculations) >= max_calcs:
+            stop =max_calcs
+        else:
+            stop = len(var_calculations)
+        # iterate to all but last item,
+        #adding item and line break to calculation string
+        for item in range(0, stop -1):
+            calc_string += var_calculations[len(var_calculations)
+                                            - item -1]
+            calc_string +="\n"
+
+        # add final item without an extra linebreak
+        # ie: last item on list will be fifth from the end!
+        calc_string += var_calculations[-max_calcs]
+
+        return calc_string
+
+
 
     # closes history dialog (used by button and x at top of dialog)
     def close_history(self,partner):

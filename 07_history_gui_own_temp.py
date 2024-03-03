@@ -1,5 +1,7 @@
 from tkinter import *
 from functools import partial  # To prevent unwanted windows
+from datetime import date 
+import re
 
 
 class Converter:
@@ -165,6 +167,7 @@ class DisplayHistory:
                                     font=("Arial", "14"),
                                     bg="#ffffff", width=25)
         self.filename_entry.grid(row=4, padx=10, pady=10)
+        self.filename_entry.bind("<Return>", self.handle_filename_entry)
 
         self.filename_error_label = Label(self.history_frame,
                                            text="Filename error goes here",
@@ -180,7 +183,8 @@ class DisplayHistory:
                                     text="Export",
                                     bg="#004C99",
                                     fg="#FFFFFF",
-                                    width=12
+                                    width=12,
+                                    command=self.export_calculations
                                     )
         self.export_button.grid(row=0, column=0, padx=10, pady=10)
 
@@ -224,9 +228,40 @@ class DisplayHistory:
         self.partner.to_history_export_button.config(state=NORMAL)
         self.history_box.destroy()
 
+    # Filename validation method
+    def validate_filename(self, filename):
+        return re.match(r'^[a-zA-Z0-9_]+$', filename)
+
+    # Update filename error method
+    def update_filename_error(self, filename):
+        if not self.validate_filename(filename):
+            self.filename_error_label.config(text="Filename can only contain letters, numbers, and underscores.", fg="#9C0000")
+        else:
+            self.filename_error_label.config(text=f"Filename '{filename}' is valid.", fg="#008000")  # Green message for success
+
+    # Handler for filename entry
+    def handle_filename_entry(self, event=None):
+        filename = self.filename_entry.get().strip()
+        self.update_filename_error(filename)
+
+    # Method to export calculations
+    def export_calculations(self):
+        filename = self.filename_entry.get().strip()
+        if filename:
+            if self.validate_filename(filename):
+                self.update_filename_error(filename)
+                # Code to export calculations to the filename
+                # You can add your file writing logic here
+                print(f"Calculations exported to '{filename}' successfully.")
+            else:
+                self.filename_error_label.config(text="Invalid filename. Please enter a valid filename.", fg="#9C0000")
+        else:
+            self.filename_error_label.config(text="Please enter a filename.", fg="#9C0000")
+
 
 if __name__ == "__main__":
     root = Tk()
     root.title("Temperature Converter")
     Converter()
     root.mainloop()
+

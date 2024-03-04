@@ -1,44 +1,44 @@
 from datetime import date 
 import re
 
-#if filename is blank, returns default name 
-# otherwise checks filename and either returns
-# an error or retuns the filename ( with .txt extension)
 def filename_maker(filename):
-
-    # creates defult filename
-    # (YYYY_MM_DD_temprature calculation)
     if filename =="":
-
-        # set filename to defult if blank for testing purposes
         filename_ok = ""
         date_part = get_date()
-        filename = "{}_tempertaure_calculations".format(date_part)
+        filename = "{}_temperature_calculations".format(date_part)
+    else:
+        filename_ok = check_filename(filename)
 
-        #checks filename only has a-z / A-Z / undrscores
-        else:
-            filename_ok = check_filename(filename)
-        if filename_ok == "":
-            filename += ".txt"
+    if filename_ok == "":
+        filename += ".txt"
+    else:
+        filename = filename_ok
 
-        else:
-            filename = filename_ok
+    return filename
 
-# retrives date and creates YYY_MM_DD string
 def get_date():
     today = date.today()
     date_string = today.strftime("%Y_%m_%d")
-
     return date_string
-# checks that filename only conatins letters,
-# numbers and underscores. Returns either "" if
-# ok or the problem if there is an error
+
 def check_filename(filename):
     problem =""
-# *** Main routine goes here ****
+    valid_char = "[A-Za-z0-9_]"
+    for letter in filename:
+        if re.match(valid_char, letter):
+            continue
+        else:
+            problem = ("Sorry, no '{}'s allowed".format(letter))
+            break
+
+    if problem != "":
+        problem = "{}. Use letters, numbers, or underscores only.".format(problem)
+    return problem
+
+# Main routine
 test_filenames = ["", "test.txt", "Test It", "test"]
 
 for item in test_filenames:
-    checked = filenmae_maker(item)
+    checked = filename_maker(item)
     print(checked)
     print()

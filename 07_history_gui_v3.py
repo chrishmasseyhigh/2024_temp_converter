@@ -170,11 +170,12 @@ class DisplayHistory:
                                     bg="#ffffff", width=25)
         self.filename_entry.grid(row=4, padx=10, pady=10)
 
-        self.filename_error_label = Label(self.history_frame,
-                                           text="Filename error goes here",
-                                           fg="#9C0000",
+        self.filename_feedback_label = Label(self.history_frame,
+                                           text="",
+                                           fg="#228B22",
+                                           wraplength =300,
                                            font=("Arial", "12", "bold"))
-        self.filename_error_label.grid(row=5)
+        self.filename_feedback_label.grid(row=5)
 
         self.button_frame = Frame(self.history_frame)
         self.button_frame.grid(row=6)
@@ -224,41 +225,44 @@ class DisplayHistory:
         return calc_string
 
     def make_file(self):
-        # retrieve filename
-        filename = self.filename_entry.get()
+            # retrieve filename
+            filename = self.filename_entry.get()
 
-        filename_ok = ""
+            filename_ok = ""
 
-        if filename == "":
-            # get date and create defult filename
-            date_part = self.get_date()
-            filename = "{}_temperature_calculations".format(date_part)
+            if filename == "":
+                # get date and create default filename
+                date_part = self.get_date()
+                filename = "{}_temperature_calculations".format(date_part)
 
-        else:
-            # check that filename is valid
-            filename_ok = self.check_filename(filename)
+            else:
+                # check that filename is valid
+                filename_ok = self.check_filename(filename)  # Remove self from here
 
-        if filename_ok =="":
-            filename += ".txt"
-            self.filename_error_label.config(text="You are OK")
+            if filename_ok == "":
+                filename += ".txt"
+                self.filename_feedback_label.config(text="You are OK", fg="#228B22")
+                self.filename_entry.config(bg="white")  # Set background to white when there's no error
+            else:
+                self.filename_feedback_label.config(text=filename_ok, fg="#C41E3A")  # Adjust this line too
+                self.filename_entry.config(bg="#FFCCCB")  # Set background to pale red when there's an error
 
-        else:
-            self.filename_error_label.config(Text=filename_ok)
+
+            
     def get_date(self):
         today = date.today()
         date_string = today.strftime("%Y_%m_%d")
-        self.var_date_string.set(date_string)
         return date_string
 
     
-    # Function to check if a filename contains only letters, numbers, and underscores
-    def check_filename(filename):
-        problem =""
+    def check_filename(self, filename):  
+        problem = ""
         # regular expression to check filename is valid
         valid_char = "[A-Za-z0-9_]"
 
-        #iterates though filename and checks each letter
+        # iterates though filename and checks each letter
         for letter in filename:
+            
             if re.match(valid_char, letter):
                 # If the character is valid, continue checking the next character
                 continue
@@ -271,6 +275,7 @@ class DisplayHistory:
             # Format the problem message
             problem = "{}. Use letters, numbers, or underscores only.".format(problem)
         return problem
+
 
 
 

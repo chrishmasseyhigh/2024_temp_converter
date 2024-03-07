@@ -5,9 +5,11 @@ import re
 
 class Converter:
     def __init__(self):
-        # set filename variable
+        # set filenames for export
         self.var_filename = StringVar()
         self.var_todays_date = StringVar()
+        self.var_calc_list = StringVar()
+       
         # Initialize variables
         self.var_feedback = StringVar()
         self.var_feedback.set("")
@@ -204,6 +206,13 @@ class DisplayHistory:
         max_calcs = self.var_max_calcs.get()
         calc_string = ""
 
+        # gertae string for writing to file
+        #(oldest calculation first)
+        oldest_first = ""
+        for item in var_calculations:
+            oldest_first += item
+            oldest_first += "\n"
+
         # work out how many times we need to loop
         # to output either the last five calculations
         # or all the calculations
@@ -229,6 +238,7 @@ class DisplayHistory:
             filename = self.filename_entry.get()
 
             filename_ok = ""
+            date_part = self.get_date()
 
             if filename == "":
                 # get date and create default filename
@@ -242,12 +252,20 @@ class DisplayHistory:
             if filename_ok == "":
                 filename += ".txt"
                 success= "Success! Your calculation history has been saved as {}".format(filename)
+                self.partner.var_filename.set(filename)
                 self.filename_feedback_label.config(text=success, fg="#228B22")
                 self.filename_entry.config(bg="white")  # Set background to white when there's no error
+                #Write content to file!
+                self.write_to_file(filename)
             else:
                 self.filename_feedback_label.config(text=filename_ok, fg="#C41E3A")  # Adjust this line too
                 self.filename_entry.config(bg="#FFCCCB")  # Set background to pale red when there's an error
 
+    def write_to_file(self,filename):
+        calc_list = self.partner.all_calculations
+        with open(filename, 'w') as file:
+            for calculation in calc_list:
+                file.write(calculation + '\n')
 
             
     def get_date(self):

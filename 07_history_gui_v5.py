@@ -83,23 +83,11 @@ class Converter:
 
     def to_history(self, all_calculations):
         self.to_history_export_button.config(state=DISABLED)
-        DisplayHistory(self, all_calculations, self.to_history_export_button, self.var_filename, 
-                        self.var_todays_date, self.var_calc_list)
-
-
-
+        DisplayHistory(self, all_calculations, self.to_history_export_button)
 
 
 class DisplayHistory:
-    def __init__(self, partner, calc_list, to_history_export_button, var_filename, var_todays_date, var_calc_list):
-        
-        self.var_filename = var_filename
-        self.var_todays_date = var_todays_date
-        self.var_calc_list = var_calc_list
-        # Other initialization code...
-
-
-
+    def __init__(self, partner, calc_list, to_history_export_button):
 
         # sets max calcs
         max_calcs = 5
@@ -273,31 +261,22 @@ class DisplayHistory:
                 self.filename_feedback_label.config(text=filename_ok, fg="#C41E3A")  # Adjust this line too
                 self.filename_entry.config(bg="#FFCCCB")  # Set background to pale red when there's an error
 
-    def write_to_file(self,filename):
-        # Retrive date,filename, and calculation history
-        filename = self.var_filename.get()
-        generated_date = self.var_todays_date.get()
-
-        # set up strings
-        heading = " **** Temprature Converter ****\n"
-        generated = "Generated : {}\n".format(generated_date)
+    def write_to_file(self, filename):
+        calc_list = self.partner.all_calculations
+        generated_date = self.get_date()
+        heading = " **** Temperature Converter ****\n"
+        generated = "Generated: {}\n".format(generated_date)
         sub_heading = "Here is your calculation history "\
                         "(oldest to newest)...\n"
-        all_calculations = self.var_calc_list.get() 
-        
-        to_output_list = [heading,generated,
-                        sub_heading,all_calculations]
-        
-        # write to file
-        text_file = open(filename, "w+")
 
-        for item in to_output_list:
-            text_file.write(item)
-            text_file.write("\n")
+        with open(filename, 'w') as file:
+            file.write(heading)
+            file.write(generated)
+            file.write(sub_heading)
+            for calculation in calc_list:
+                file.write(calculation + '\n')
 
-        #close file
-        text_file.close()
-        
+            
     def get_date(self):
         today = date.today()
         date_string = today.strftime("%Y_%m_%d")
@@ -324,6 +303,9 @@ class DisplayHistory:
             # Format the problem message
             problem = "{}. Use letters, numbers, or underscores only.".format(problem)
         return problem
+
+
+
 
     # closes history dialog (used by button and x at top of dialog)
     def close_history(self, partner):
